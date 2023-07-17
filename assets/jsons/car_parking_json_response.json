@@ -1,0 +1,27 @@
+[
+  {
+    "slotType": "S",
+    "slotId": "S-100",
+    "parkingSpaceId": "1",
+    "floor": "first"
+  },
+  {
+    "slotType": "M",
+    "slotId": "M-99",
+    "parkingSpaceId": "1",
+    "floor": "second"
+  },
+  {
+    "slotType": "L",
+    "slotId": "L-87",
+    "parkingSpaceId": "1",
+    "floor": "Third"
+  },
+  {
+    "slotType": "XL",
+    "slotId": "XL-94",
+    "parkingSpaceId": "1",
+    "floor": "second"
+  }
+]
+
