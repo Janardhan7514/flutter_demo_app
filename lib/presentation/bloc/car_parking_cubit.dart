@@ -15,7 +15,7 @@ class CarParkingCubit extends Cubit<CarParkingState> {
 
   static String selectedSlot = '';
   static List<String> listOfSelectedSlots=[];
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
 
 
   CarParkingCubit(

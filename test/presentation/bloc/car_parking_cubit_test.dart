@@ -54,7 +54,7 @@ void main() {
           .thenAnswer((_) async => const Right(mParkingDomainModel));
     },
     act: (CarParkingCubit cubit) async {
-      bloc.getSlotForCarParking(_mockContext, "", 1);
+      bloc.getSlotForCarParking(_mockContext, "S", 1);
     },
     expect: () => [isA<CarParkingGettingSlotSuccessState>()],
   );
@@ -68,7 +68,7 @@ void main() {
           .thenAnswer((_) async => const Left(ServerFailure("error")));
     },
     act: (CarParkingCubit cubit) async {
-      bloc.getSlotForCarParking(_mockContext, "", 1);
+      bloc.getSlotForCarParking(_mockContext, "S", 1);
     },
     expect: () => [isA<CarParkingGettingSlotStateFailed>()],
   );
