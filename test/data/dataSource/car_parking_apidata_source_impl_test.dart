@@ -11,31 +11,34 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'car_parking_apidata_source_impl_test.mocks.dart';
 
-
-@GenerateMocks([HttpClient,CarParkingAPIRemoteDataSourceImpl])
+@GenerateMocks([HttpClient, CarParkingAPIRemoteDataSourceImpl])
 void main() {
   late MockCarParkingAPIRemoteDataSourceImpl dataSource;
   late MockHttpClient mockHttpClient;
-  late Function1<ParkingDomainModel, ParkingDomainEntity> _planDomainModelMapper;
+  late Function1<ParkingDomainModel, ParkingDomainEntity>
+      _planDomainModelMapper;
 
   setUp(() {
     mockHttpClient = MockHttpClient();
-    _planDomainModelMapper=CarParkingDomainModelMapper();
+    _planDomainModelMapper = CarParkingDomainModelMapper();
     dataSource = MockCarParkingAPIRemoteDataSourceImpl();
   });
 
   group('get slot using API', () {
     test(
       'should return remote data when the call to remote data source is successful',
-          () async {
-        const tParkingDomainModel = ParkingDomainModel(slotType: 'S', floor: 'first',slotId: 'S-100', parkingSpaceId: '1');
-        when(dataSource.getSlotForCar("S", "1")).thenAnswer((_) async => tParkingDomainModel);
+      () async {
+        const tParkingDomainModel = ParkingDomainModel(
+            slotType: 'S',
+            floor: 'first',
+            slotId: 'S-100',
+            parkingSpaceId: '1');
+        when(dataSource.getSlotForCar("S", "1"))
+            .thenAnswer((_) async => tParkingDomainModel);
         final result = await dataSource.getSlotForCar("S", "1");
         verify(dataSource.getSlotForCar("S", "1"));
-        expect(result,tParkingDomainModel);
+        expect(result, tParkingDomainModel);
       },
     );
   });
-
-
 }

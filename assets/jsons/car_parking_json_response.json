@@ -1,8 +1,57 @@
 [
   {
     "slotType": "S",
-    "slotId": "S-100",
+    "slotId": "S-01",
     "parkingSpaceId": "1",
+    "floor": "first"
+  },
+  {
+    "slotType": "S",
+    "slotId": "S-05",
+    "parkingSpaceId": "5",
+    "floor": "first"
+  },
+  {
+    "slotType": "S",
+    "slotId": "S-02",
+    "parkingSpaceId": "2",
+    "floor": "first"
+  },
+  {
+    "slotType": "S",
+    "slotId": "S-03",
+    "parkingSpaceId": "3",
+    "floor": "first"
+  },
+  {
+    "slotType": "S",
+    "slotId": "S-04",
+    "parkingSpaceId": "4",
+    "floor": "first"
+  }, {
+    "slotType": "S",
+    "slotId": "S-06",
+    "parkingSpaceId": "6",
+    "floor": "first"
+  }, {
+    "slotType": "S",
+    "slotId": "S-07",
+    "parkingSpaceId": "7",
+    "floor": "first"
+  }, {
+    "slotType": "S",
+    "slotId": "S-08",
+    "parkingSpaceId": "8",
+    "floor": "first"
+  }, {
+    "slotType": "S",
+    "slotId": "S-09",
+    "parkingSpaceId": "9",
+    "floor": "first"
+  }, {
+    "slotType": "S",
+    "slotId": "S-10",
+    "parkingSpaceId": "10",
     "floor": "first"
   },
   {

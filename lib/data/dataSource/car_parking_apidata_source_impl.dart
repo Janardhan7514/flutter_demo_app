@@ -15,10 +15,9 @@ class CarParkingAPIRemoteDataSourceImpl extends CarParkingAPIRemoteDataSource {
   CarParkingAPIRemoteDataSourceImpl(this._planDomainModelMapper);
 
 
-  //To check how other slots are assigned if S slot is not present remove that slot from Json file "car_parking_json_response"
+  //To check how other slots are assigned if S slot is not present remove that slot from Json file
   @override
-  Future<ParkingDomainEntity> getSlotForCar(
-      String slotType, String parkingSpace) async {
+  Future<ParkingDomainEntity> getSlotForCar(String slotType, String parkingSpace) async {
     var testData = const ParkingDomainModel(
       slotId: "",
       parkingSpaceId: "",
@@ -27,19 +26,17 @@ class CarParkingAPIRemoteDataSourceImpl extends CarParkingAPIRemoteDataSource {
     );
 
     late ParkingDomainModel slotModelS;
+    late ParkingDomainModel slotModelS1;
     late ParkingDomainModel slotModelM;
     late ParkingDomainModel slotModelL;
     late ParkingDomainModel slotModelXL;
     late ParkingDomainModel assignedSlot;
 
-    String data = await rootBundle
-        .loadString('assets/jsons/car_parking_json_response.json');
+    String data = await rootBundle.loadString('assets/jsons/car_parking_json_response.json');
     var jsonResult = json.decode(data);
-    var finalResult =
-        jsonResult.map((data) => ParkingDomainModel.fromJson(data)).toList();
+    var finalResult = jsonResult.map((data) => ParkingDomainModel.fromJson(data)).toList();
 
-    slotModelS = finalResult.firstWhere((element) => element.slotType == "S",
-        orElse: () => testData);
+    slotModelS = finalResult.firstWhere((element) => (element.slotType == "S" && element.parkingSpaceId==parkingSpace), orElse: () => testData);
     slotModelM = finalResult.firstWhere((element) => element.slotType == "M",
         orElse: () => testData);
     slotModelL = finalResult.firstWhere((element) => element.slotType == "L",

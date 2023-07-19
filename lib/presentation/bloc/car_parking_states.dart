@@ -8,7 +8,14 @@ abstract class CarParkingState extends Equatable {
   List<Object> get props => [];
 }
 
+
 class CarParkingLoadingState extends CarParkingState {
+  @override
+  List<Object> get props => [];
+}
+
+class CarShowSlotUI extends CarParkingState {
+
   @override
   List<Object> get props => [];
 }
@@ -47,6 +54,14 @@ class CarParkingSlotReleasedStateFailed extends CarParkingState {
 class CarParkingGettingSlotStateFailed extends CarParkingState {
   final String message;
   const CarParkingGettingSlotStateFailed(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class CarParkingSlotIsSelected extends CarParkingState {
+  final String message;
+  const CarParkingSlotIsSelected(this.message);
 
   @override
   List<Object> get props => [message];

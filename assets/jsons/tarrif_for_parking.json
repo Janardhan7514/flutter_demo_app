@@ -1,0 +1,32 @@
+{
+  "P001" : {
+    "ParkingName": "Avenue Mall",
+    "tariffFeatures": [
+      {
+        "featureName": "Calls cost 20.9p per minute to UK landlines or mobiles"
+      }
+    ]
+  },
+  "P002": {
+    "ParkingName": "City center office",
+    "tariffFeatures": [
+      {
+        "featureName": "300 minutes to UK landlines and mobiles"
+      },
+      {
+        "featureName": "Allowance includes 0870 and 0845 numbers"
+      }
+    ]
+  },
+  "P003": {
+    "ParkingName": "Amanora mall",
+    "tariffFeatures": [
+      {
+        "tarrif": "500 minutes to UK landlines and mobiles"
+      },
+      {
+        "featureName": "Allowance includes 0870 and 0845 numbers"
+      }
+    ]
+  }
+}
