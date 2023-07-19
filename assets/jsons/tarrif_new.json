@@ -1,0 +1,27 @@
+[
+  {
+    "tarrifID": "1",
+    "cost": "20",
+    "duration": "1",
+    "desc": "the cost till 4 hours"
+  },
+  {
+    "tarrifID": "2",
+    "cost": "50",
+    "duration": "8-hrs",
+    "desc": "you have been charged cost of 8 hrs"
+  },
+  {
+    "tarrifID": "3",
+    "cost": "100",
+    "duration": "12-hrs",
+    "desc": "you have been charged cost of 12 hrs"
+  },
+  {
+    "tarrifID": "4",
+    "cost": "200",
+    "duration": "24-hrs",
+    "desc": "you have been charged cost of 24 hrs"
+  }
+]
+
