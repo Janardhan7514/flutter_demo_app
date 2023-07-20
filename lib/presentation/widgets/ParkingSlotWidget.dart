@@ -1,12 +1,12 @@
 import 'package:demo_app/presentation/bloc/car_parking_states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../injection.dart';
 import '../bloc/car_parking_cubit.dart';
 
 class ParkingSlotWidget extends StatefulWidget {
-  const ParkingSlotWidget({super.key, required this.slotSelected, required this.type});
+  const ParkingSlotWidget(
+      {super.key, required this.slotSelected, required this.type});
 
   final String slotSelected;
   final String type;
@@ -17,217 +17,261 @@ class ParkingSlotWidget extends StatefulWidget {
 
 class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
   List<String> slots = ["S", "M", "L", "XL"];
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
+  var textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
 
   late CarParkingCubit bloc = getIt<CarParkingCubit>();
-  List<String> listOFSlots = [];
 
   @override
   Widget build(BuildContext context) {
-    listOFSlots = bloc.getSlotList();
     return BlocConsumer<CarParkingCubit, CarParkingState>(
-        bloc: bloc,
-        listener: (context, state) {
-          if (state is CarParkingGettingSlotSuccessState) {
-            var desc;
-            var SlotType = state.featuresModel.slotType;
-            var SlotId = state.featuresModel.slotId;
-            var floor = state.featuresModel.floor;
-            if (SlotType.isEmpty) {
-              desc = "Sorry no slot available";
-            } else {
-              desc = "You have been alloted parking on  ${floor} floor of slotType ${SlotType} having slotId ${SlotId} ";
-            }
-
-            final snackBar = SnackBar(
-              content: Text(desc),
-              action: SnackBarAction(
-                label: 'Ok',
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
-          if(state is CarParkingSlotReleasedState){
-
-            var SlotType = state.release;
-            var desc;
-            if (SlotType.isEmpty) {
-              desc = "Sorry no slot available";
-            } else {
-              desc =
-              "Your alloted slot has been released";
-            }
-
-            final snackBar = SnackBar(
-              content: Text(desc),
-              action: SnackBarAction(
-                label: 'Ok',
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            );
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          }
-        },
-        builder: (context, state) {
-          var selectedSlot = "";
-          var releaseSlot = "";
-          if (state is CarParkingGettingSlotSuccessState) {
-            selectedSlot = state.featuresModel.slotId;
-          } else if(state is CarParkingSlotReleasedState){
-            releaseSlot=state.release;
-          }else {
-            selectedSlot = widget.slotSelected;
-          }
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(50, 0, 50, 50),
-            child: ListView.separated(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: 4,
-                itemBuilder: (context, outerIndex) {
-                  return GridView.count(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    mainAxisSpacing: 2,
-                    crossAxisSpacing: 4,
-                    crossAxisCount: 10,
-                    children: List.generate(100, (index) {
-                      return Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            var getColor=assignColorToSlot(index, outerIndex, selectedSlot, releaseSlot);
-                            if(widget.type=="D"){
-                              if(getColor==Colors.teal){
-                                final snackBar = SnackBar(
-                                  content: const Text("You are not allowed to do so!!!"),
-                                  action: SnackBarAction(
-                                    label: 'Ok',
-                                    onPressed: () {
-                                      //Navigator.pop(context);
-                                    },
-                                  ),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                              }else{
-                                bloc.releaseSlotForCarParking(context, slots[outerIndex], index + 1);
-                              }
-                            }else{
-                              print('Slot Clicked ${slots[outerIndex]}-${index + 1}');
-                              if(getColor==Colors.red){
-                                final snackBar = SnackBar(
-                                  content: const Text("This is slot is already booked.."),
-                                  action: SnackBarAction(
-                                    label: 'Ok',
-                                    onPressed: () {
-                                      //Navigator.pop(context);
-                                    },
-                                  ),
-                                );
-                                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                              }else{
-                                bloc.getSlotForCarParking(context, slots[outerIndex], index + 1);
-                              }
-
-
-
-                            }
-                            },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: assignColorToSlot(index, outerIndex, selectedSlot, releaseSlot), // This is what you need!
-                          ),
-                          child: FittedBox(
-                            fit: BoxFit.cover,
-                            child: Text(
-                              '${slots[outerIndex]}-${index + 1}',
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  );
-                },
-                separatorBuilder: (context, index) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Slot Type - ${slots[index + 1].toString()}",
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            const Text(
-                              "Total Capacity - 100",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 25),
-                      ],
-                    )),
+      bloc: bloc,
+      listener: (context, state) {
+        if (state is CarParkingGettingSlotSuccessState) {
+          var desc = getDescriptionDetails(state);
+          final snackBar = genericSnackBar(desc, () {
+            Navigator.pop(context);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+        if (state is CarParkingSlotReleasedState) {
+          var desc = carSlotReleasedDescription(state);
+          bloc.setSlot="";
+          final snackBar = SnackBar(
+            content: Text(desc),
+            action: SnackBarAction(label: 'Ok', onPressed: () {}),
           );
-        });
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      },
+      builder: (context, state) {
+        var selectedSlot = "";
+        var releaseSlot = "";
+        if (state is CarParkingGettingSlotSuccessState) {
+          selectedSlot = state.featuresModel.slotId;
+        } else if (state is CarParkingSlotReleasedState) {
+          releaseSlot = state.release;
+          return showYourBillInvoice(state);
+        } else {
+          selectedSlot = widget.slotSelected;
+        }
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(50, 20, 50, 50),
+          child: ListView.separated(
+            key: const Key("CarParkingList"),
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: 4,
+            itemBuilder: (context, outerIndex) {
+              return GridView.count(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  mainAxisSpacing: 2,
+                  crossAxisSpacing: 4,
+                  crossAxisCount: 10,
+                  children: List.generate(100,
+                    (index) {
+                      return Center(
+                        child: selectParkingSlotButton(index, outerIndex,
+                            selectedSlot, releaseSlot, context),
+                      );
+                    },
+                  ));
+            },
+            separatorBuilder: (context, index) => separatorWidgetForList(index),
+          ),
+        );
+      },
+    );
   }
 
-  Color assignColorToSlot(int index, int outerIndex, String slotSelected, String releaseSlot) {
-    print("index is ${index} and slots[outerIndex] is ${slots[outerIndex]}");
-    print("JD slot ${slotSelected}");
-    var slotColor;
-    print("MYlist size ${listOFSlots.length}");
+  Widget selectParkingSlotButton(
+    int index,
+    int outerIndex,
+    String selectedSlot,
+    String releaseSlot,
+    BuildContext context,
+  ) {
+    return ElevatedButton(
+      key: Key("${slots[outerIndex]}-$index"),
+      onPressed: () {
+        debugPrint("button is pressed");
+        var getColor = assignColorToSlot(
+          index,
+          outerIndex,
+          selectedSlot,
+          releaseSlot,
+        );
+        if (widget.type == "D") {
+          if (getColor == Colors.teal) {
+            final snackBar = genericSnackBar("You are not allowed to do so!!!", () {});
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else {
+            bloc.releaseSlotForCarParking(context, slots[outerIndex], index + 1);
+          }
+        } else {
+          debugPrint('Slot Clicked ${slots[outerIndex]}-${index + 1}');
+          if (getColor == Colors.red) {
+            final snackBar = genericSnackBar("This is slot is already booked..", () {});
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          } else {
+            bloc.getSlotForCarParking(context, slots[outerIndex], index + 1);
+          }
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: assignColorToSlot(
+          index,
+          outerIndex,
+          selectedSlot,
+          releaseSlot,
+        ), // This is what you need!
+      ),
+      child: FittedBox(
+        fit: BoxFit.cover,
+        child: Text(
+          '${slots[outerIndex]}-${index + 1}',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+      ),
+    );
+  }
 
-    /*String item =  nameRetriever("${slotSelected}");
-    if (item.isNotEmpty) {
-      List<String> words = item.split("-");
-      int intVal = int.parse(words[1]);
-      if (slots[outerIndex] == words[0] && index + 1 == intVal) {
-        print("item found");
-        return slotColor = Colors.red;
-      }
-    }*/
+  SnackBar genericSnackBar(String text, Function() onTap) {
+    return SnackBar(
+      content: Text(text),
+      action: SnackBarAction(
+        label: 'Ok',
+        onPressed: onTap,
+      ),
+    );
+  }
 
+  Column separatorWidgetForList(int index) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 10),
+        index == 0
+            ? getFirstListItemSeparatorWidget(
+                "Slot Type - S",
+                "Total Capacity - 100",
+              )
+            : Container(),
+        const Divider(
+            color: Colors.black
+        ),
+        separatorRowWidget(index, "Total Capacity - 100"),
+        const SizedBox(height: 25),
+      ],
+    );
+  }
+
+  Row separatorRowWidget(int index, String text2) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text("Slot Type - ${slots[index + 1].toString()}", style: textStyle),
+        Text(text2, style: textStyle)
+      ],
+    );
+  }
+
+  String carSlotReleasedDescription(CarParkingSlotReleasedState state) {
+    var desc = "";
+    if (state.release.isEmpty) {
+      desc = "Sorry no slot available";
+    } else {
+      desc =
+          "Your allotted slot has been released and we are generating your bill please wait";
+    }
+    return desc;
+  }
+
+  String getDescriptionDetails(CarParkingGettingSlotSuccessState state) {
+    var desc = "";
+    var slotType = state.featuresModel.slotType;
+    var slotId = state.featuresModel.slotId;
+    var floor = state.featuresModel.floor;
+    if (slotType.isEmpty) {
+      desc = "Sorry no slot available";
+    } else {
+      desc =
+          "You have been allotted parking on  $floor floor of slotType $slotType having slotId $slotId ";
+    }
+    return desc;
+  }
+
+  Color assignColorToSlot(
+      int index, int outerIndex, String slotSelected, String releaseSlot) {
+    MaterialColor slotColor;
     if (slotSelected.isNotEmpty) {
       List<String> words = slotSelected.split("-");
       int intVal = int.parse(words[1]);
       if (slots[outerIndex] == words[0] && index + 1 == intVal) {
-        print("item found");
+        debugPrint("Button color changed");
         return slotColor = Colors.red;
       }
-    }else if(releaseSlot.isNotEmpty){
-      //List<String> words = slotSelected.split("-");
-      //int intVal = int.parse(words[1]);
-      //if (slots[outerIndex] == words[0] && index + 1 == intVal) {
-        print("item found");
-        return slotColor = Colors.teal;
-      //}
+    } else if (releaseSlot.isNotEmpty) {
+      return slotColor = Colors.teal;
     }
     if (index == 1) {
       slotColor = Colors.teal;
     } else if (index == 2) {
-      //slotColor = index.floor().isEven ? Colors.red[400] : Colors.teal;
       slotColor = Colors.teal;
     } else if (index == 3) {
-      /*slotColor = (outerIndex == 1)
-          ? Colors.red[400]
-          : (index.floor().isOdd
-              ? Colors.red[400]
-              : Colors.teal); */ // This is what you need!
-
       slotColor = Colors.teal;
     } else {
       slotColor = Colors.teal;
-      /*slotColor = (outerIndex == 1)
-          ? Colors.red[400]
-          : (index.floor().isOdd ? Colors.red[400] : Colors.teal); */ // T
     }
     return slotColor;
+  }
+
+  Widget showYourBillInvoice(CarParkingSlotReleasedState state) {
+    return Container(
+      width: 500,
+      height: 300,
+      padding: const EdgeInsets.all(20.0),
+      child: Center(
+        child: Column(
+          key: Key("bill-invoice-column"),
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            rowItem("Vehicle Id -", "MHG 12 RU 7667"),
+            rowSeparatorSizedBox(),
+            rowItem("Vehicle SlotType -", state.tariffData.slotType),
+            rowSeparatorSizedBox(),
+            rowItem("In time -", "10.20AM"),
+            rowSeparatorSizedBox(),
+            rowItem("Out time -", "1.00 PM"),
+            rowSeparatorSizedBox(),
+            rowItem("Parking Cost -", state.tariffData.cost),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Row rowItem(String text1, String text2) {
+    return Row(
+      children: [
+        Expanded(child: Text(text1, style: textStyle)),
+        Expanded(child: Text(text2, style: textStyle)),
+      ],
+    );
+  }
+
+  SizedBox rowSeparatorSizedBox() => const SizedBox(height: 10);
+
+  Widget getFirstListItemSeparatorWidget(String text1, String text2) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(text1, style: textStyle),
+          Text(text2, style: textStyle),
+        ],
+      ),
+    );
   }
 }

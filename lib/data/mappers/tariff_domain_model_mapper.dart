@@ -7,8 +7,9 @@ class TariffDomainModelMapper
     implements Function1<TariffDomainModel, TariffDomainEntity> {
   @override
   TariffDomainEntity call(TariffDomainModel tariffData) {
+    print("tariff data ");
     return TariffDomainModel(
-      tariffID: tariffData.tariffID ?? " ",
+      slotType: tariffData.slotType ?? " ",
       cost: tariffData.cost ?? " ",
       duration: tariffData.duration ?? " ",
       desc: tariffData.desc ?? " ",

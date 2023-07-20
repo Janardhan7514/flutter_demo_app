@@ -1,4 +1,5 @@
 import 'package:demo_app/domain/entity/parking_domain_entity.dart';
+import 'package:demo_app/domain/entity/tarrif_domain_entity.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class CarParkingState extends Equatable {
@@ -8,14 +9,12 @@ abstract class CarParkingState extends Equatable {
   List<Object> get props => [];
 }
 
-
 class CarParkingLoadingState extends CarParkingState {
   @override
   List<Object> get props => [];
 }
 
 class CarShowSlotUI extends CarParkingState {
-
   @override
   List<Object> get props => [];
 }
@@ -36,15 +35,17 @@ class CarParkingGettingSlotSuccessState extends CarParkingState {
 
 class CarParkingSlotReleasedState extends CarParkingState {
   final String release;
+  final TariffDomainEntity tariffData;
 
-  const CarParkingSlotReleasedState(this.release);
+  const CarParkingSlotReleasedState(this.release, this.tariffData);
 
   @override
-  List<Object> get props => [release];
+  List<Object> get props => [release,tariffData];
 }
 
 class CarParkingSlotReleasedStateFailed extends CarParkingState {
   final String message;
+
   const CarParkingSlotReleasedStateFailed({required this.message});
 
   @override
@@ -53,6 +54,7 @@ class CarParkingSlotReleasedStateFailed extends CarParkingState {
 
 class CarParkingGettingSlotStateFailed extends CarParkingState {
   final String message;
+
   const CarParkingGettingSlotStateFailed(this.message);
 
   @override
@@ -61,7 +63,26 @@ class CarParkingGettingSlotStateFailed extends CarParkingState {
 
 class CarParkingSlotIsSelected extends CarParkingState {
   final String message;
+
   const CarParkingSlotIsSelected(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class CarParkingTariffFetchedState extends CarParkingState {
+  final TariffDomainEntity featuresModel;
+
+  const CarParkingTariffFetchedState(this.featuresModel);
+
+  @override
+  List<Object> get props => [featuresModel];
+}
+
+class CarParkingTariffFetchedFailedState extends CarParkingState {
+  final String message;
+
+  const CarParkingTariffFetchedFailedState(this.message);
 
   @override
   List<Object> get props => [message];

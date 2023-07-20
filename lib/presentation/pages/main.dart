@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Parking Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -43,9 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return BlocProvider<CarParkingCubit>(
       create: (_) => bloc,
       child: BlocConsumer<CarParkingCubit, CarParkingState>(
-        listener: (BuildContext context, state) {
-
-        },
+        listener: (BuildContext context, state) {},
         builder: (BuildContext context, state) {
           return buildScaffold(state, context, bloc);
         },
@@ -59,16 +57,13 @@ class _MyHomePageState extends State<MyHomePage> {
       Future.delayed(const Duration(milliseconds: 2000), () {
         BlocProvider.of<CarParkingCubit>(context).setLoadedState();
       });
-      return Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
-        body: const Center(child: CircularProgressIndicator()),
+      return genericScaffold(
+        const CircularProgressIndicator(),
       );
     } else if (state is CarParkingGettingSlotStateFailed) {
       return carParkingFailedUI();
-    } else if (state is CarParkingGettingSlotSuccessState) {
-      return carParkingSlotSuccessUI(state, context);
-    } else if (state is CarParkingSlotReleasedState) {
-      return carParkingReleaseSlotUI(context);
+    } else if (state is CarParkingTariffFetchedFailedState) {
+      return carParkingFailedUI();
     } else if (state is CarParkingLoadingSuccessState) {
       return carParkingLoadingSuccessUI(context);
     } else if (state is CarParkingSlotIsSelected) {
@@ -79,153 +74,94 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Scaffold carParkingLoadingSuccessUI(BuildContext context) {
+    Widget column = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        myCard(),
+
+        SizedBox(
+          width: 300,
+          child: elevatedButtonAllocate(context),
+        ),
+        SizedBox(
+          width: 300,
+          child: elevatedButtonDeAllocate(context),
+        ),
+      ],
+    );
+    return genericScaffold(column);
+  }
+
+  ElevatedButton elevatedButtonDeAllocate(BuildContext context) {
+    return ElevatedButton(
+      key: const Key("DeAllocate"),
+      onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute<void>(
+          builder: (BuildContext context) => BlocProvider.value(
+            value: bloc,
+            child: const FloorPage(
+              type: "D",
+              slotSelected: '',
+            ),
+          ),
+        ));
+      },
+      child: const Text('click DeAllocate'),
+    );
+  }
+
+  ElevatedButton elevatedButtonAllocate(BuildContext context) {
+    return ElevatedButton(
+      key: const Key("Allocate"),
+      onPressed: () {
+        Navigator.of(context).push(MaterialPageRoute<void>(
+          builder: (BuildContext context) => BlocProvider.value(
+            value: bloc,
+            child: const FloorPage(
+              type: "A",
+              slotSelected: '',
+            ),
+          ),
+        ));
+      },
+      child: const Text('click Allocate'),
+    );
+  }
+
+  Widget carParkingFailedUI() {
+    return genericScaffold(const Text("ERROR"));
+  }
+
+  Scaffold genericScaffold(Widget child) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              width: 250,
-              child: ElevatedButton(
-                key: const Key("Allocate"),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute<void>(
-                    builder: (BuildContext context) => BlocProvider.value(
-                      value: bloc,
-                      child: FloorPage(
-                        type:"A",
-                        slotSelected: '',
-                      ),
-                    ),
-                  ));
+      body: Center(child: child),
+    );
+  }
 
-                },
-                child: const Text('click Allocate'),
+  Widget myCard() {
+    return Card(
+      margin: const EdgeInsets.all(20),
+      color: Colors.lightGreen[100],
+      shadowColor: Colors.blueGrey,
+      elevation: 10,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: const <Widget>[
+          ListTile(
+            leading: Icon(Icons.local_parking, color: Colors.cyan, size: 45),
+            title: Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Text(
+                "Welcome to Amanora Parking",
+                style: TextStyle(fontSize: 20),
               ),
             ),
-
-
-            SizedBox(
-              width: 250,
-              child: ElevatedButton(
-                key: const Key("DeAllocate"),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute<void>(
-                    builder: (BuildContext context) => BlocProvider.value(
-                      value: bloc,
-                      child: const FloorPage(
-                        type:"D",
-                        slotSelected: '',
-                      ),
-                    ),
-                  ));
-
-                },
-                child: const Text('click DeAllocate'),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Scaffold carParkingReleaseSlotUI(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          margin: const EdgeInsets.all(16),
-          width: 300,
-          height: 200,
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            border: Border.all(width: 5, color: Colors.amberAccent),
+            subtitle: Text('Vehicle under CCTV surveillance',style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                width: 250,
-                child: ElevatedButton(
-                  key: const Key("Allocate"),
-                  onPressed: () {
-                    BlocProvider.of<CarParkingCubit>(context)
-                        .getSlotForCarParking(context, "S", 1);
-                  },
-                  child: const Text('Allocate'),
-                ),
-              ),
-              const Text("your parking slot has been released"),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Scaffold carParkingSlotSuccessUI(
-      CarParkingGettingSlotSuccessState state, BuildContext context) {
-    var desc;
-    var SlotType = state.featuresModel.slotType;
-    var SlotId = state.featuresModel.slotId;
-    var floor = state.featuresModel.floor;
-    if (SlotType.isEmpty) {
-      desc = "Sorry no slot available";
-    } else {
-      desc =
-          "You have been alloted parking on  ${floor} floor of slotType ${SlotType} having slotId ${SlotId} ";
-    }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        key: const Key("K-container"),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          margin: const EdgeInsets.all(16),
-          width: 300,
-          height: 200,
-          decoration: BoxDecoration(
-            color: Colors.transparent,
-            border: Border.all(width: 5, color: Colors.amberAccent),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                width: 250,
-                child: ElevatedButton(
-                  key: const Key("Allocate"),
-                  onPressed: () {
-                    BlocProvider.of<CarParkingCubit>(context)
-                        .releaseSlotForCarParking(context, "S", 1);
-                  },
-                  child: const Text('click To DeAllocate'),
-                ),
-              ),
-              Text(desc),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Scaffold carParkingFailedUI() {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: const Center(
-        child: Text("ERROR"),
+        ],
       ),
     );
   }

@@ -3,36 +3,36 @@ import 'package:demo_app/domain/entity/tarrif_domain_entity.dart';
 import 'package:equatable/equatable.dart';
 
 class TariffDomainModel extends TariffDomainEntity {
-  final String tariffID;
+  final String slotType;
   final String cost;
   final String duration;
   final String desc;
 
   const TariffDomainModel({
-    required this.tariffID,
+    required this.slotType,
     required this.cost,
     required this.duration,
     required this.desc,
-  }) : super(tariffID: '', cost: '', duration: '', desc: '');
+  }) : super(slotType: '', cost: '', duration: '', desc: '');
 
   @override
-  List<Object?> get props => [tariffID, cost, duration, desc];
+  List<Object?> get props => [slotType, cost, duration, desc];
 
   factory TariffDomainModel.fromJson(Map<String, dynamic> json) {
     return TariffDomainModel(
-      tariffID: json['slotId'],
-      cost: json['parkingSpaceId'],
-      duration: json['slotType'],
-      desc: json['floor'],
+      slotType: json['slotType'],
+      cost: json['cost'],
+      duration: json['duration'],
+      desc: json['desc'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'slotId': tariffID,
-      'parkingSpaceId': cost,
-      'slotType': duration,
-      'floor': desc,
+      'slotType': slotType,
+      'cost': cost,
+      'duration': duration,
+      'desc': desc,
     };
   }
 }

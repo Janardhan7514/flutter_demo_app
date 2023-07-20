@@ -72,6 +72,7 @@ flutter:
   uses-material-design: true
   assets:
   - assets/jsons/car_parking_json_response.json
+  - assets/jsons/tarrif_new.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

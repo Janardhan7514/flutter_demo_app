@@ -57,19 +57,19 @@
   {
     "slotType": "M",
     "slotId": "M-99",
-    "parkingSpaceId": "1",
+    "parkingSpaceId": "99",
     "floor": "second"
   },
   {
     "slotType": "L",
     "slotId": "L-87",
-    "parkingSpaceId": "1",
+    "parkingSpaceId": "87",
     "floor": "Third"
   },
   {
     "slotType": "XL",
     "slotId": "XL-94",
-    "parkingSpaceId": "1",
+    "parkingSpaceId": "94",
     "floor": "second"
   }
 ]

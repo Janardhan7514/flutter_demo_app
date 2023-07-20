@@ -3,13 +3,16 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
-import 'package:demo_app/domain/entity/parking_domain_entity.dart' as _i7;
+import 'package:demo_app/domain/entity/parking_domain_entity.dart' as _i8;
+import 'package:demo_app/domain/entity/tarrif_domain_entity.dart' as _i11;
 import 'package:demo_app/domain/repository/carparking_repository.dart' as _i2;
-import 'package:demo_app/domain/usecase/get_parking_slot.dart' as _i4;
-import 'package:demo_app/domain/usecase/release_parking_slot.dart' as _i8;
-import 'package:demo_app/errors.dart' as _i6;
+import 'package:demo_app/domain/repository/tariff_plans_repository.dart' as _i4;
+import 'package:demo_app/domain/usecase/get_parking_slot.dart' as _i5;
+import 'package:demo_app/domain/usecase/get_tarrif_plans.dart' as _i10;
+import 'package:demo_app/domain/usecase/release_parking_slot.dart' as _i9;
+import 'package:demo_app/errors.dart' as _i7;
 import 'package:fpdart/fpdart.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -28,11 +31,14 @@ class _FakeCarParkingRepository_0 extends _i1.Fake
 
 class _FakeEither_1<L, R> extends _i1.Fake implements _i3.Either<L, R> {}
 
+class _FakeTariffsPlanRepository_2 extends _i1.Fake
+    implements _i4.TariffsPlanRepository {}
+
 /// A class which mocks [GetParkingSlotUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockGetParkingSlotUseCase extends _i1.Mock
-    implements _i4.GetParkingSlotUseCase {
+    implements _i5.GetParkingSlotUseCase {
   MockGetParkingSlotUseCase() {
     _i1.throwOnMissingStub(this);
   }
@@ -43,37 +49,65 @@ class MockGetParkingSlotUseCase extends _i1.Mock
         returnValue: _FakeCarParkingRepository_0(),
       ) as _i2.CarParkingRepository);
   @override
-  _i5.Future<_i3.Either<_i6.Failure, _i7.ParkingDomainEntity>> call(
-          _i4.CarParkingUseCaseParams? params) =>
+  _i6.Future<_i3.Either<_i7.Failure, _i8.ParkingDomainEntity>> call(
+          _i5.CarParkingUseCaseParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
           #call,
           [params],
         ),
         returnValue:
-            Future<_i3.Either<_i6.Failure, _i7.ParkingDomainEntity>>.value(
-                _FakeEither_1<_i6.Failure, _i7.ParkingDomainEntity>()),
-      ) as _i5.Future<_i3.Either<_i6.Failure, _i7.ParkingDomainEntity>>);
+            Future<_i3.Either<_i7.Failure, _i8.ParkingDomainEntity>>.value(
+                _FakeEither_1<_i7.Failure, _i8.ParkingDomainEntity>()),
+      ) as _i6.Future<_i3.Either<_i7.Failure, _i8.ParkingDomainEntity>>);
 }
 
 /// A class which mocks [ReleaseParkingSlotUseCase].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockReleaseParkingSlotUseCase extends _i1.Mock
-    implements _i8.ReleaseParkingSlotUseCase {
+    implements _i9.ReleaseParkingSlotUseCase {
   MockReleaseParkingSlotUseCase() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i5.Future<_i3.Either<_i6.Failure, bool>> call(
-          _i8.CarParkingUseCaseParams? params) =>
+  _i6.Future<_i3.Either<_i7.Failure, bool>> call(
+          _i9.CarParkingUseCaseParams? params) =>
       (super.noSuchMethod(
         Invocation.method(
           #call,
           [params],
         ),
-        returnValue: Future<_i3.Either<_i6.Failure, bool>>.value(
-            _FakeEither_1<_i6.Failure, bool>()),
-      ) as _i5.Future<_i3.Either<_i6.Failure, bool>>);
+        returnValue: Future<_i3.Either<_i7.Failure, bool>>.value(
+            _FakeEither_1<_i7.Failure, bool>()),
+      ) as _i6.Future<_i3.Either<_i7.Failure, bool>>);
+}
+
+/// A class which mocks [GetTariffPlansUseCase].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockGetTariffPlansUseCase extends _i1.Mock
+    implements _i10.GetTariffPlansUseCase {
+  MockGetTariffPlansUseCase() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i4.TariffsPlanRepository get featuresRepository => (super.noSuchMethod(
+        Invocation.getter(#featuresRepository),
+        returnValue: _FakeTariffsPlanRepository_2(),
+      ) as _i4.TariffsPlanRepository);
+  @override
+  _i6.Future<_i3.Either<_i7.Failure, _i11.TariffDomainEntity>> call(
+          _i10.TariffPlanUseCaseParams? params) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #call,
+          [params],
+        ),
+        returnValue:
+            Future<_i3.Either<_i7.Failure, _i11.TariffDomainEntity>>.value(
+                _FakeEither_1<_i7.Failure, _i11.TariffDomainEntity>()),
+      ) as _i6.Future<_i3.Either<_i7.Failure, _i11.TariffDomainEntity>>);
 }
