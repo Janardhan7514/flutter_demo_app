@@ -62,22 +62,27 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
             shrinkWrap: true,
             itemCount: 4,
             itemBuilder: (context, outerIndex) {
-              return GridView.count(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  mainAxisSpacing: 2,
-                  crossAxisSpacing: 4,
-                  crossAxisCount: 10,
-                  children: List.generate(100,
-                    (index) {
-                      return Center(
-                        child: selectParkingSlotButton(index, outerIndex,
-                            selectedSlot, releaseSlot, context),
-                      );
-                    },
-                  ));
+              return Column(
+                children: [
+                  separatorRowWidget(outerIndex, "Total Capacity - 100"),
+                  const SizedBox(height: 20),
+                  GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      mainAxisSpacing: 2,
+                      crossAxisSpacing: 4,
+                      crossAxisCount: 10,
+                      children: List.generate(100, (index) {
+                          return Center(
+                            child: selectParkingSlotButton(index, outerIndex,
+                                selectedSlot, releaseSlot, context),
+                          );
+                        },
+                      )),
+                ],
+              );
             },
-            separatorBuilder: (context, index) => separatorWidgetForList(index),
+            separatorBuilder: (context, index) => separatorWidgetForList(),
           ),
         );
       },
@@ -146,22 +151,15 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
     );
   }
 
-  Column separatorWidgetForList(int index) {
+  Column separatorWidgetForList() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 10),
-        index == 0
-            ? getFirstListItemSeparatorWidget(
-                "Slot Type - S",
-                "Total Capacity - 100",
-              )
-            : Container(),
-        const Divider(
+      children: const [
+        SizedBox(height: 20),
+        Divider(
+            height: 10,
             color: Colors.black
         ),
-        separatorRowWidget(index, "Total Capacity - 100"),
-        const SizedBox(height: 25),
       ],
     );
   }
@@ -170,7 +168,7 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Slot Type - ${slots[index + 1].toString()}", style: textStyle),
+        Text("Slot Type - ${slots[index ].toString()}", style: textStyle),
         Text(text2, style: textStyle)
       ],
     );
@@ -233,7 +231,7 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
       padding: const EdgeInsets.all(20.0),
       child: Center(
         child: Column(
-          key: Key("bill-invoice-column"),
+          key: const Key("bill-invoice-column"),
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             rowItem("Vehicle Id -", "MHG 12 RU 7667"),
@@ -261,17 +259,4 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
   }
 
   SizedBox rowSeparatorSizedBox() => const SizedBox(height: 10);
-
-  Widget getFirstListItemSeparatorWidget(String text1, String text2) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(text1, style: textStyle),
-          Text(text2, style: textStyle),
-        ],
-      ),
-    );
-  }
 }
