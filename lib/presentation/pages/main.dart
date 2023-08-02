@@ -159,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(fontSize: 20),
               ),
             ),
-            subtitle: Text('Vehicle under CCTV surveillance',style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
+            subtitle: Text('Vehicle under CCTV surveillance',style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),),
           ),
         ],
       ),

@@ -1,5 +1,9 @@
+import 'dart:collection';
+
 import 'package:bloc/bloc.dart';
 import 'package:demo_app/domain/entity/tarrif_domain_entity.dart';
+import 'package:demo_app/domain/models/ParkingLot.dart';
+import 'package:demo_app/domain/models/SlotFactory.dart';
 import 'package:demo_app/domain/usecase/get_parking_slot.dart' as myUsecase;
 import 'package:demo_app/domain/usecase/get_tarrif_plans.dart';
 import 'package:demo_app/domain/usecase/release_parking_slot.dart' as release;
@@ -7,6 +11,8 @@ import 'package:demo_app/domain/usecase/release_parking_slot.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../domain/models/Floor.dart';
+import '../../domain/models/parking_slots.dart';
 import '../../domain/usecase/get_parking_slot.dart';
 import 'car_parking_states.dart';
 
@@ -33,7 +39,8 @@ class CarParkingCubit extends Cubit<CarParkingState> {
     selectedSlot = name;
   }
 
-  Future<void> getSlotForCarParking(BuildContext context, String slotType, int parkingSpace) async {
+  Future<void> getSlotForCarParking(
+      BuildContext context, String slotType, int parkingSpace) async {
     selectedSlot = "$slotType-$parkingSpace";
     debugPrint("Slot io selected $selectedSlot");
 
@@ -48,7 +55,8 @@ class CarParkingCubit extends Cubit<CarParkingState> {
         emit(CarParkingGettingSlotStateFailed(failure.message));
       },
       (featuresModel) {
-        selectedSlot="${featuresModel.slotType}-${featuresModel.parkingSpaceId}";
+        selectedSlot =
+            "${featuresModel.slotType}-${featuresModel.parkingSpaceId}";
         debugPrint("My Slot from API $selectedSlot");
         debugPrint('Features: $featuresModel');
         emit(CarParkingGettingSlotSuccessState(featuresModel));
@@ -111,5 +119,24 @@ class CarParkingCubit extends Cubit<CarParkingState> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final name = prefs.getString(name1) ?? '';
     return name;
+  }
+
+  void createSlotForParking(ParkingSlotType slotType, int capacity) async {
+    debugPrint("Slot Name ${slotType.name}");
+    Map<ParkingSlotType, Map<String, ParkingSlot?>> allSlots = HashMap<ParkingSlotType, Map<String, ParkingSlot?>>();
+    Map<String, ParkingSlot?> compactSlot = HashMap<String, ParkingSlot?>();
+
+    SlotFactory slotFactory = SlotFactory();
+
+    for (int i = 0; i < capacity; i++) {
+      compactSlot.putIfAbsent("${slotType.name}-$i", () => slotFactory.getParkingSlot(slotType, "${slotType.name}-$i"));
+    }
+    allSlots.putIfAbsent(slotType, () => compactSlot);
+
+    Floor parkingFloor = Floor("1", allSlots);
+    List<Floor> parkingFloors = <Floor>[];
+    parkingFloors.add(parkingFloor);
+
+    ParkingLot parkinglot = ParkingLot("AMANORA", parkingFloors, "AM-001");
   }
 }
