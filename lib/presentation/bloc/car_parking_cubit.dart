@@ -133,10 +133,19 @@ class CarParkingCubit extends Cubit<CarParkingState> {
     }
     allSlots.putIfAbsent(slotType, () => compactSlot);
 
+    Iterable<MapEntry<ParkingSlotType, Map<String, ParkingSlot?>>> entries = allSlots.entries;
+    for (final entry in entries) {
+      print('MANA (${entry.key}, ${entry.value.values.first?.isAvailable.toString()=="true"})');
+    }
+
     Floor parkingFloor = Floor("1", allSlots);
     List<Floor> parkingFloors = <Floor>[];
     parkingFloors.add(parkingFloor);
 
-    ParkingLot parkinglot = ParkingLot("AMANORA", parkingFloors, "AM-001");
+    ParkingLot parkinglot = ParkingLot("BT", parkingFloors, "BT-001");
+
+    Vehicle vehicle = Vehicle("MH-12-RU-1121", VehicleType.car);
+
+    parkinglot.getParkingSlotForVehicle();
   }
 }
