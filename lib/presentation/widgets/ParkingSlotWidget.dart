@@ -37,7 +37,7 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
         }
         if (state is CarParkingSlotReleasedState) {
           var desc = carSlotReleasedDescription(state);
-          bloc.setSlot="";
+          bloc.setSlot = "";
           final snackBar = SnackBar(
             content: Text(desc),
             action: SnackBarAction(label: 'Ok', onPressed: () {}),
@@ -64,7 +64,7 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
             shrinkWrap: true,
             itemCount: nSlots.length,
             itemBuilder: (context, outerIndex) {
-              bloc.createSlotForParking(nSlots.elementAt(outerIndex),100);
+              bloc.createSlotForParking(nSlots.elementAt(outerIndex), 100);
               return Column(
                 children: [
                   separatorRowWidget(outerIndex, "Total Capacity - 100"),
@@ -75,8 +75,10 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
                       mainAxisSpacing: 2,
                       crossAxisSpacing: 4,
                       crossAxisCount: 10,
-                      children: List.generate(100, (index) {
-                        return Center(
+                      children: List.generate(
+                        100,
+                        (index) {
+                          return Center(
                             child: selectParkingSlotButton(index, outerIndex,
                                 selectedSlot, releaseSlot, context),
                           );
@@ -84,7 +86,7 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
                       )),
                 ],
               );
-              },
+            },
             separatorBuilder: (context, index) => separatorWidgetForList(),
           ),
         );
@@ -111,20 +113,24 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
         );
         if (widget.type == "D") {
           if (getColor == Colors.teal) {
-            final snackBar = genericSnackBar("You are not allowed to do so!!!", () {});
+            final snackBar =
+                genericSnackBar("You are not allowed to do so!!!", () {});
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           } else {
-            //bloc.releaseSlotForCarParking(context, slots[outerIndex], index + 1);
-            bloc.releaseSlotForCarParking(context, nSlots.elementAt(outerIndex).name, index + 1);
+            bloc.releaseSlotForCarParking(
+                context, nSlots.elementAt(outerIndex).name, index + 1);
           }
         } else {
-          debugPrint('Slot Clicked ${nSlots.elementAt(outerIndex).name}-${index + 1}');
+          debugPrint(
+              'Slot Clicked ${nSlots.elementAt(outerIndex).name}-${index + 1}');
           if (getColor == Colors.red) {
-            final snackBar = genericSnackBar("This is slot is already booked..", () {});
+            final snackBar =
+                genericSnackBar("This is slot is already booked..", () {});
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           } else {
-           // bloc.getSlotForCarParking(context, slots[outerIndex], index + 1);
-            bloc.getSlotForCarParking(context, nSlots.elementAt(outerIndex).name, index + 1);
+            bloc.getSlotForCarParking(
+                context, nSlots.elementAt(outerIndex).name, index + 1);
+            bloc.getParkingSlot();
           }
         }
       },
@@ -161,10 +167,7 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
         SizedBox(height: 20),
-        Divider(
-            height: 10,
-            color: Colors.black
-        ),
+        Divider(height: 10, color: Colors.black),
       ],
     );
   }
@@ -173,7 +176,8 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Slot Type - ${nSlots.elementAt(index).name.toString()}", style: textStyle),
+        Text("Slot Type - ${nSlots.elementAt(index).name.toString()}",
+            style: textStyle),
         Text(text2, style: textStyle)
       ],
     );
@@ -210,7 +214,8 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
     if (slotSelected.isNotEmpty) {
       List<String> words = slotSelected.split("-");
       int intVal = int.parse(words[1]);
-      if (nSlots.elementAt(outerIndex).name == words[0] && index + 1 == intVal) {
+      if (nSlots.elementAt(outerIndex).name == words[0] &&
+          index + 1 == intVal) {
         debugPrint("Button color changed");
         return slotColor = Colors.red;
       }
