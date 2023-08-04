@@ -5,15 +5,15 @@ import 'ParkingLot.dart';
 class SlotFactory {
   ParkingSlot? getParkingSlot(ParkingSlotType planType, String slotNumber) {
     if (planType.name == "S") {
-      return SmallParkingSlot(slotNumber);
+      return SmallParkingSlot(slotNumber,true);
     } else if (planType.name == "M") {
-      return MediumParkingSlot(slotNumber);
+      return MediumParkingSlot(slotNumber,true);
     } else if (planType.name == "L") {
-      return LargeParkingSlot(slotNumber);
+      return LargeParkingSlot(slotNumber,true);
     } else if (planType.name == "XL") {
-      return ExtraLargeParkingSlot(slotNumber);
+      return ExtraLargeParkingSlot(slotNumber,true);
     }else if (planType.name == "XXL") {
-      return ExtraExtraLargeParkingSlot(slotNumber);
+      return ExtraExtraLargeParkingSlot(slotNumber,true);
     }
     return null;
   }

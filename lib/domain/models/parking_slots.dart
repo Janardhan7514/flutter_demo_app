@@ -2,18 +2,23 @@ import 'ParkingLot.dart';
 
 abstract class ParkingSlot {
   final String slotNumber;
-  final bool isAvailable=true;
+  late bool isAvailable;
 
   ParkingSlot(
-    this.slotNumber
+    this.slotNumber, this.isAvailable
   );
 
+  bool availability(bool value){
+    return isAvailable=value;
+  }
+
   ParkingSlotType getType();
+
 }
 
 class SmallParkingSlot extends ParkingSlot {
   SmallParkingSlot(
-    super.slotNumber,
+    super.slotNumber, super.isAvailable,
   );
 
   @override
@@ -24,7 +29,7 @@ class SmallParkingSlot extends ParkingSlot {
 
 class LargeParkingSlot extends ParkingSlot {
   LargeParkingSlot(
-    super.slotNumber,
+    super.slotNumber, super.isAvailable,
   );
 
   @override
@@ -35,7 +40,7 @@ class LargeParkingSlot extends ParkingSlot {
 
 class MediumParkingSlot extends ParkingSlot {
   MediumParkingSlot(
-    super.slotNumber,
+    super.slotNumber, super.isAvailable,
   );
 
   @override
@@ -46,7 +51,7 @@ class MediumParkingSlot extends ParkingSlot {
 
 class ExtraLargeParkingSlot extends ParkingSlot {
   ExtraLargeParkingSlot(
-    super.slotNumber,
+    super.slotNumber, super.isAvailable,
   );
 
   @override
@@ -57,7 +62,7 @@ class ExtraLargeParkingSlot extends ParkingSlot {
 
 class ExtraExtraLargeParkingSlot extends ParkingSlot {
   ExtraExtraLargeParkingSlot(
-    super.slotNumber,
+    super.slotNumber, super.isAvailable,
   );
 
   @override

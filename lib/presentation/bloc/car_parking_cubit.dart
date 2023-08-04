@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:demo_app/domain/entity/tarrif_domain_entity.dart';
 import 'package:demo_app/domain/models/ParkingLot.dart';
 import 'package:demo_app/domain/models/SlotFactory.dart';
+import 'package:demo_app/domain/models/bookSlot.dart';
 import 'package:demo_app/domain/usecase/get_parking_slot.dart' as myUsecase;
 import 'package:demo_app/domain/usecase/get_tarrif_plans.dart';
 import 'package:demo_app/domain/usecase/release_parking_slot.dart' as release;
@@ -23,6 +24,7 @@ class CarParkingCubit extends Cubit<CarParkingState> {
 
   static String selectedSlot = '';
   static List<String> listOfSelectedSlots = [];
+  List<ParkingSlotType> nSlots = ParkingSlotType.values;
 
   List<Floor> parkingFloors = <Floor>[];
   Map<ParkingSlotType, Map<String, ParkingSlot?>> allSlots = HashMap<ParkingSlotType, Map<String, ParkingSlot?>>();
@@ -115,6 +117,9 @@ class CarParkingCubit extends Cubit<CarParkingState> {
 
   void setLoadedState() {
     emit(CarParkingLoadingSuccessState());
+    for(int i=0;i<nSlots.length;i++){
+      createSlotForParking(nSlots.elementAt(i), 100);
+    }
   }
 
   //TODO unused now
@@ -132,22 +137,37 @@ class CarParkingCubit extends Cubit<CarParkingState> {
     SlotFactory slotFactory = SlotFactory();
 
     for (int i = 0; i < capacity; i++) {
-      compactSlot.putIfAbsent("${slotType.name}-$i",
-          () => slotFactory.getParkingSlot(slotType, "${slotType.name}-$i"));
+      compactSlot.putIfAbsent("${slotType.name}-$i", () => slotFactory.getParkingSlot(slotType, "${slotType.name}-$i"));
     }
     allSlots.putIfAbsent(slotType, () => compactSlot);
 
-    Floor parkingFloor = Floor("1", allSlots);
+    Floor parkingFloor= Floor();
+    parkingFloor.assignData("1", [], allSlots);
+
     parkingFloors.add(parkingFloor);
 
     ParkingLot parkingLot = ParkingLot();
     parkingLot.assignData("BT", parkingFloors,"BT-001");
 
-    parkingFloor.getTotalSLots();
   }
 
-  getParkingSlot() {
+  Future<ParkingSlot?> getParkingSlot(String slotNumber) async{
     Vehicle vehicle = Vehicle("MH-12-RU-1121", VehicleType.bus);
-    ParkingLot.instance.getParkingSlotForVehicle(vehicle);
+    ParkingSlot? parkingSlot =await ParkingLot.instance.getParkingSlotForVehicle(vehicle,slotNumber);
+
+    emit(CarParkingNewLocalSlotSuccess(parkingSlot!.slotNumber));
+    return parkingSlot;
+  }
+
+  Future<ParkingSlot?> releaseParkingSlot(String slotNumber) async{
+    Vehicle vehicle = Vehicle("MH-12-RU-1121", VehicleType.bus);
+    ParkingSlot? parkingSlot =await ParkingLot.instance.releaseParkingSlot(vehicle,slotNumber);
+
+    emit(CarParkingReleaseLocalSlotSuccess(parkingSlot!.slotNumber));
+    return parkingSlot;
+  }
+
+  List<BookSlot> getBooksLostList(){
+    return Floor.instance.getSlotList();
   }
 }

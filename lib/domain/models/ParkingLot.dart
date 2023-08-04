@@ -24,18 +24,21 @@ class ParkingLot {
     parkingLotId = sParkingLotId;
   }
 
-  addFloors(String floorId,
-      Map<ParkingSlotType, Map<String, ParkingSlot>> parkSlots) {
-    Floor parkingFloor = Floor(floorId, parkSlots);
-    floors.add(parkingFloor);
+  addFloors(String floorId, Map<ParkingSlotType, Map<String, ParkingSlot>> parkSlots) {
+    //Floor parkingFloor = Floor(floorId, parkSlots);
+    //floors.add(parkingFloor);
   }
 
   removeFloor(Floor floorId) {
     floors.remove(floorId);
   }
 
-  ParkingSlot? getParkingSlotForVehicle(Vehicle vehicle) {
-    return floors.elementAt(0).getSlot(vehicle);
+  ParkingSlot? getParkingSlotForVehicle(Vehicle vehicle, String slotNumber){
+    return floors.elementAt(0).getSlot(vehicle,slotNumber);
+  }
+
+  ParkingSlot? releaseParkingSlot(Vehicle vehicle, String slotNumber){
+    return floors.elementAt(0).releaseSlot(vehicle,slotNumber);
   }
 }
 

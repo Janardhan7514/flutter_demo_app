@@ -33,6 +33,24 @@ class CarParkingGettingSlotSuccessState extends CarParkingState {
   List<Object> get props => [featuresModel];
 }
 
+class CarParkingNewLocalSlotSuccess extends CarParkingState {
+  final String slot;
+
+  const CarParkingNewLocalSlotSuccess(this.slot);
+
+  @override
+  List<Object> get props => [slot];
+}
+
+class CarParkingReleaseLocalSlotSuccess extends CarParkingState {
+  final String slot;
+
+  const CarParkingReleaseLocalSlotSuccess(this.slot);
+
+  @override
+  List<Object> get props => [slot];
+}
+
 class CarParkingSlotReleasedState extends CarParkingState {
   final String release;
   final TariffDomainEntity tariffData;

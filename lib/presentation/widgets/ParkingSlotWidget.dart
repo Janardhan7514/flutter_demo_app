@@ -1,3 +1,6 @@
+import 'package:demo_app/domain/models/Floor.dart';
+import 'package:demo_app/domain/models/bookSlot.dart';
+import 'package:demo_app/domain/models/parking_slots.dart';
 import 'package:demo_app/presentation/bloc/car_parking_states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,8 +21,10 @@ class ParkingSlotWidget extends StatefulWidget {
 
 class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
   List<ParkingSlotType> nSlots = ParkingSlotType.values;
+  List<BookSlot> slots = [];
 
   var textStyle = const TextStyle(fontWeight: FontWeight.bold, fontSize: 15);
+  Iterable<MapEntry<ParkingSlotType, Map<String, ParkingSlot?>>> data = [];
 
   late CarParkingCubit bloc = getIt<CarParkingCubit>();
 
@@ -30,6 +35,20 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
       listener: (context, state) {
         if (state is CarParkingGettingSlotSuccessState) {
           var desc = getDescriptionDetails(state);
+          final snackBar = genericSnackBar(desc, () {
+            Navigator.pop(context);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+        if (state is CarParkingNewLocalSlotSuccess) {
+          var desc = "you have been alloted slot number ${state.slot}";
+          final snackBar = genericSnackBar(desc, () {
+            Navigator.pop(context);
+          });
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+        if (state is CarParkingReleaseLocalSlotSuccess) {
+          var desc = "Your slot ${state.slot} has been released";
           final snackBar = genericSnackBar(desc, () {
             Navigator.pop(context);
           });
@@ -46,10 +65,14 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
         }
       },
       builder: (context, state) {
-        var selectedSlot = "";
+        slots = bloc.getBooksLostList();
+        String? selectedSlot = "";
         var releaseSlot = "";
         if (state is CarParkingGettingSlotSuccessState) {
           selectedSlot = state.featuresModel.slotId;
+        }
+        if (state is CarParkingNewLocalSlotSuccess) {
+          selectedSlot = state.slot;
         } else if (state is CarParkingSlotReleasedState) {
           releaseSlot = state.release;
           return showYourBillInvoice(state);
@@ -64,7 +87,6 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
             shrinkWrap: true,
             itemCount: nSlots.length,
             itemBuilder: (context, outerIndex) {
-              bloc.createSlotForParking(nSlots.elementAt(outerIndex), 100);
               return Column(
                 children: [
                   separatorRowWidget(outerIndex, "Total Capacity - 100"),
@@ -80,7 +102,7 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
                         (index) {
                           return Center(
                             child: selectParkingSlotButton(index, outerIndex,
-                                selectedSlot, releaseSlot, context),
+                                selectedSlot!, releaseSlot, context),
                           );
                         },
                       )),
@@ -101,37 +123,33 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
     String releaseSlot,
     BuildContext context,
   ) {
+
     return ElevatedButton(
       key: Key("${nSlots.elementAt(outerIndex).name}-$index"),
-      onPressed: () {
-        debugPrint("button is pressed");
-        var getColor = assignColorToSlot(
-          index,
-          outerIndex,
-          selectedSlot,
-          releaseSlot,
-        );
+      onPressed: () async {
         if (widget.type == "D") {
-          if (getColor == Colors.teal) {
-            final snackBar =
-                genericSnackBar("You are not allowed to do so!!!", () {});
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          } else {
-            bloc.releaseSlotForCarParking(
-                context, nSlots.elementAt(outerIndex).name, index + 1);
-          }
+          ParkingSlot? parkingSlot = await bloc.releaseParkingSlot("${nSlots.elementAt(outerIndex).name}-${index + 1}");
+          debugPrint('parkingSlot number ${parkingSlot?.slotNumber} is released now -> ${parkingSlot?.isAvailable}');
+          setState(() {
+            data
+                .elementAt(outerIndex)
+                .value
+                .values
+                .elementAt(index)
+                ?.availability(true);
+          });
         } else {
-          debugPrint(
-              'Slot Clicked ${nSlots.elementAt(outerIndex).name}-${index + 1}');
-          if (getColor == Colors.red) {
-            final snackBar =
-                genericSnackBar("This is slot is already booked..", () {});
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-          } else {
-            bloc.getSlotForCarParking(
-                context, nSlots.elementAt(outerIndex).name, index + 1);
-            bloc.getParkingSlot();
-          }
+          ParkingSlot? parkingSlot = await bloc.getParkingSlot("${nSlots.elementAt(outerIndex).name}-${index + 1}");
+          debugPrint('parkingSlot number ${parkingSlot?.slotNumber} is available for parking - > ${parkingSlot?.isAvailable} ');
+
+          setState(() {
+            data
+                .elementAt(outerIndex)
+                .value
+                .values
+                .elementAt(index)
+                ?.availability(false);
+          });
         }
       },
       style: ElevatedButton.styleFrom(
@@ -140,7 +158,7 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
           outerIndex,
           selectedSlot,
           releaseSlot,
-        ), // This is what you need!
+        ),
       ),
       child: FittedBox(
         fit: BoxFit.cover,
@@ -208,30 +226,13 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
     return desc;
   }
 
-  Color assignColorToSlot(
-      int index, int outerIndex, String slotSelected, String releaseSlot) {
-    MaterialColor slotColor;
-    if (slotSelected.isNotEmpty) {
-      List<String> words = slotSelected.split("-");
-      int intVal = int.parse(words[1]);
-      if (nSlots.elementAt(outerIndex).name == words[0] &&
-          index + 1 == intVal) {
-        debugPrint("Button color changed");
-        return slotColor = Colors.red;
-      }
-    } else if (releaseSlot.isNotEmpty) {
-      return slotColor = Colors.teal;
-    }
-    if (index == 1) {
-      slotColor = Colors.teal;
-    } else if (index == 2) {
-      slotColor = Colors.teal;
-    } else if (index == 3) {
-      slotColor = Colors.teal;
+  Color assignColorToSlot(int index, int outerIndex, String slotSelected, String releaseSlot) {
+    if (data.elementAt(outerIndex).value.values.elementAt(index)?.isAvailable ==
+        true) {
+      return Colors.teal;
     } else {
-      slotColor = Colors.teal;
+      return Colors.red;
     }
-    return slotColor;
   }
 
   Widget showYourBillInvoice(CarParkingSlotReleasedState state) {
@@ -269,4 +270,10 @@ class _ParkingSlotWidgetState extends State<ParkingSlotWidget> {
   }
 
   SizedBox rowSeparatorSizedBox() => const SizedBox(height: 10);
+
+  @override
+  void initState() {
+    Floor floor = Floor();
+    data = floor.mallSlots.entries;
+  }
 }
